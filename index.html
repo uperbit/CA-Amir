@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth overflow-x-hidden">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Amir Nazir & Associates | Chartered Accountants</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -27,14 +27,20 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap');
         
+        /* Fixed horizontal scroll issues */
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+            position: relative;
+        }
+
         .hero-gradient {
             background: linear-gradient(rgba(15, 23, 42, 0.88), rgba(15, 23, 42, 0.88)), 
-                        url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=2000&q=80');
+                        url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2000&q=80');
             background-size: cover;
             background-position: center;
         }
 
-        /* Solid White Navigation for Mobile / Blur for Desktop */
         .glass-nav {
             background-color: #ffffff;
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
@@ -57,21 +63,13 @@
             margin: 1.5rem auto 0;
         }
 
-        .service-card {
+        .service-card, .expert-card {
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .service-card:hover {
+        .service-card:hover, .expert-card:hover {
             transform: translateY(-12px);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
-
-        .feature-icon-box {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        }
-
-        /* Responsive Modal Fixes */
-        .modal-scroll::-webkit-scrollbar { width: 4px; }
-        .modal-scroll::-webkit-scrollbar-thumb { background: #b45309; border-radius: 10px; }
 
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(30px); }
@@ -79,205 +77,430 @@
         }
         .reveal { opacity: 0; }
         .reveal.active { animation: fadeInUp 0.8s forwards; }
+
+        .metric-card {
+            border-left: 2px solid rgba(180, 83, 9, 0.3);
+        }
+
+        details summary::-webkit-details-marker { display: none; }
+        details[open] summary i { transform: rotate(180deg); }
+
+        /* Custom scrollbar for modal */
+        #booking-content ::-webkit-scrollbar {
+            width: 4px;
+        }
+        #booking-content ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
     </style>
 </head>
-<body class="bg-light text-primary font-sans overflow-x-hidden">
+<body class="bg-light text-primary font-sans">
 
     <!-- Navigation -->
     <nav class="fixed w-full z-50 glass-nav">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20 items-center">
                 <div class="flex-shrink-0 flex flex-col">
-                    <span class="text-xl md:text-2xl font-serif font-extrabold tracking-tight text-primary">AMIR NAZIR</span>
+                    <span class="text-xl md:text-2xl font-serif font-extrabold tracking-tight text-primary uppercase">AMIR NAZIR</span>
                     <span class="text-[10px] md:text-xs tracking-[0.3em] text-accent font-bold uppercase">& Associates</span>
                 </div>
                 
-                <div class="hidden md:flex space-x-10 items-center">
-                    <a href="#home" class="text-sm font-semibold tracking-wide hover:text-accent transition-colors">Home</a>
-                    <a href="#about" class="text-sm font-semibold tracking-wide hover:text-accent transition-colors">About</a>
-                    <a href="#services" class="text-sm font-semibold tracking-wide hover:text-accent transition-colors">Services</a>
-                    <a href="#industries" class="text-sm font-semibold tracking-wide hover:text-accent transition-colors">Industries</a>
-                    <button onclick="openBookingModal()" class="bg-primary text-white px-7 py-2.5 rounded-sm hover:bg-accent transition-all text-sm font-bold uppercase tracking-widest shadow-lg shadow-primary/10">Consult Now</button>
+                <div class="hidden xl:flex space-x-8 items-center">
+                    <a href="#home" class="text-xs font-bold tracking-widest uppercase hover:text-accent transition-colors">Home</a>
+                    <a href="#services" class="text-xs font-bold tracking-widest uppercase hover:text-accent transition-colors">Services</a>
+                    <a href="#why-us" class="text-xs font-bold tracking-widest uppercase hover:text-accent transition-colors">Why Us</a>
+                    <a href="#leadership" class="text-xs font-bold tracking-widest uppercase hover:text-accent transition-colors">Principal</a>
+                    <a href="#expertise" class="text-xs font-bold tracking-widest uppercase hover:text-accent transition-colors">Expertise</a>
+                    <a href="#faq" class="text-xs font-bold tracking-widest uppercase hover:text-accent transition-colors">FAQ</a>
+                    <button onclick="openBookingModal()" class="bg-primary text-white px-6 py-2.5 rounded-sm hover:bg-accent transition-all text-xs font-bold uppercase tracking-widest">Consult Now</button>
                 </div>
 
-                <div class="md:hidden">
-                    <button id="mobile-menu-btn" class="text-primary p-2 relative z-[60] focus:outline-none">
+                <div class="xl:hidden">
+                    <button id="mobile-menu-btn" class="text-primary p-2 focus:outline-none">
                         <i id="menu-icon" class="fa-solid fa-bars-staggered text-2xl"></i>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Mobile Side Menu Overlay -->
+        <!-- Mobile Menu -->
         <div id="mobile-overlay" class="fixed inset-0 bg-primary/60 backdrop-blur-sm z-[55] hidden opacity-0 transition-opacity duration-300"></div>
-        
-        <!-- Mobile Side Menu Panel (Opaque) -->
         <div id="mobile-menu-container" class="fixed top-0 right-0 h-full w-[85%] max-w-xs bg-white z-[58] shadow-2xl transform translate-x-full flex flex-col p-8 transition-transform duration-500 ease-in-out">
             <div class="mt-16 space-y-2">
-                <a href="#home" class="mobile-link block text-2xl font-serif py-4 border-b border-slate-100 text-primary active:text-accent">Home</a>
-                <a href="#about" class="mobile-link block text-2xl font-serif py-4 border-b border-slate-100 text-primary active:text-accent">About</a>
-                <a href="#services" class="mobile-link block text-2xl font-serif py-4 border-b border-slate-100 text-primary active:text-accent">Services</a>
-                <a href="#industries" class="mobile-link block text-2xl font-serif py-4 border-b border-slate-100 text-primary active:text-accent">Industries</a>
-                <button onclick="openBookingModal()" class="w-full bg-accent text-white py-5 font-bold tracking-widest uppercase text-sm mt-10 shadow-xl shadow-accent/30 rounded-sm">Book Consultation</button>
-            </div>
-            <div class="mt-auto pb-10">
-                <p class="text-[10px] text-secondary uppercase tracking-[0.3em] font-bold mb-6">Expertise Redefined</p>
-                <div class="flex space-x-8 text-2xl text-primary">
-                    <i class="fa-brands fa-linkedin-in"></i>
-                    <i class="fa-brands fa-whatsapp"></i>
-                    <i class="fa-solid fa-envelope"></i>
-                </div>
+                <a href="#home" class="mobile-link block text-xl font-serif py-4 border-b border-slate-100 text-primary">Home</a>
+                <a href="#services" class="mobile-link block text-xl font-serif py-4 border-b border-slate-100 text-primary">Services</a>
+                <a href="#leadership" class="mobile-link block text-xl font-serif py-4 border-b border-slate-100 text-primary">Firm Principal</a>
+                <a href="#expertise" class="mobile-link block text-xl font-serif py-4 border-b border-slate-100 text-primary">Industries</a>
+                <a href="#contact" class="mobile-link block text-xl font-serif py-4 border-b border-slate-100 text-primary">Contact</a>
+                <button onclick="openBookingModal()" class="w-full bg-accent text-white py-4 font-bold tracking-widest uppercase text-xs mt-10 rounded-sm">Book Consultation</button>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
+    <!-- Hero Section - Left aligned for desktop -->
     <section id="home" class="hero-gradient min-h-[90vh] md:min-h-screen flex items-center pt-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
-            <div class="max-w-4xl">
-                <span class="inline-block px-4 py-1.5 bg-accent/20 border border-accent/30 text-accent font-bold tracking-[0.2em] uppercase text-xs mb-8 rounded-full reveal">Global Compliance Standards</span>
-                <h1 class="text-4xl md:text-8xl font-serif font-extrabold mb-8 leading-[1.1] reveal">
-                    Architecture of <br>
-                    <span class="text-accent italic">Financial</span> Growth.
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white w-full">
+            <div class="max-w-4xl text-left">
+                <h1 class="text-4xl md:text-7xl lg:text-8xl font-serif font-extrabold mb-8 leading-[1.1] reveal">
+                    Integrity in <br>
+                    <span class="text-accent italic">Financial</span> Stewardship.
                 </h1>
-                <p class="text-lg md:text-2xl text-slate-300 mb-12 max-w-2xl leading-relaxed reveal">
-                    Strategic auditing, taxation, and advisory for corporations navigating complex global markets. We turn regulatory burdens into business insights.
+                <p class="text-base md:text-xl lg:text-2xl text-slate-300 mb-12 max-w-2xl leading-relaxed reveal">
+                    Empowering Srinagar's enterprise landscape through precision auditing, strategic taxation, and unwavering regulatory compliance.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-5 reveal">
-                    <button onclick="openBookingModal()" class="bg-accent text-white px-10 py-5 rounded-sm font-bold uppercase tracking-widest hover:bg-white hover:text-primary transition-all duration-300 shadow-2xl shadow-accent/30 text-center">Book Consultation</button>
-                    <a href="#services" class="border-2 border-white/20 text-white px-10 py-5 rounded-sm font-bold uppercase tracking-widest hover:bg-white hover:text-primary transition-all duration-300 text-center backdrop-blur-sm">Our Portfolio</a>
+                    <button onclick="openBookingModal()" class="bg-accent text-white px-8 py-4 rounded-sm font-bold uppercase tracking-widest hover:bg-white hover:text-primary transition-all duration-300 shadow-xl shadow-accent/20 text-center text-sm">Schedule a Visit</button>
+                    <a href="#services" class="border border-white/30 text-white px-8 py-4 rounded-sm font-bold uppercase tracking-widest hover:bg-white hover:text-primary transition-all duration-300 text-center backdrop-blur-md text-sm">View Practice Areas</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Partners/Trust Bar -->
-    <div class="py-10 bg-white border-b border-slate-100">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <p class="text-[10px] uppercase tracking-[0.4em] font-extrabold text-slate-400 mb-8">Trusted by Market Leaders Across Industries</p>
-            <div class="flex flex-wrap justify-center items-center gap-10 md:gap-20 opacity-40 grayscale contrast-125">
-                <i class="fa-brands fa-apple text-3xl"></i>
-                <i class="fa-brands fa-microsoft text-3xl"></i>
-                <i class="fa-brands fa-amazon text-3xl"></i>
-                <i class="fa-brands fa-google text-3xl"></i>
-                <i class="fa-brands fa-salesforce text-3xl"></i>
+    <!-- Metrics Section -->
+    <section class="py-12 md:py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
+                <div class="metric-card pl-6 reveal">
+                    <p class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-primary mb-1">500+</p>
+                    <p class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-accent">Corporate Clients</p>
+                </div>
+                <div class="metric-card pl-6 reveal">
+                    <p class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-primary mb-1">1.2k+</p>
+                    <p class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-accent">Consultations</p>
+                </div>
+                <div class="metric-card pl-6 reveal">
+                    <p class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-primary mb-1">15Y+</p>
+                    <p class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-accent">Firm Experience</p>
+                </div>
+                <div class="metric-card pl-6 reveal">
+                    <p class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-primary mb-1">250+</p>
+                    <p class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-accent">Audits Delivered</p>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Why Choose Us Grid -->
-    <section class="py-24 bg-white overflow-hidden">
+    <!-- Why Choose Us -->
+    <section id="why-us" class="py-24 bg-slate-50 overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-20 items-center">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
                 <div class="reveal">
-                    <h2 class="text-accent font-extrabold tracking-widest uppercase text-xs mb-4">Firm Advantage</h2>
-                    <h3 class="text-4xl md:text-5xl font-serif font-bold text-primary mb-8">Why Global Firms Choose Our Expertise</h3>
-                    <div class="space-y-8">
-                        <div class="flex gap-6">
-                            <div class="flex-shrink-0 w-14 h-14 feature-icon-box rounded-lg flex items-center justify-center text-accent text-2xl shadow-xl shadow-primary/10">
-                                <i class="fa-solid fa-microchip"></i>
-                            </div>
+                    <h2 class="text-accent font-extrabold tracking-widest uppercase text-xs mb-4 italic">The ANA Advantage</h2>
+                    <h3 class="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-primary mb-8 leading-tight">Why Leading J&K Businesses Trust Our Counsel</h3>
+                    <p class="text-secondary leading-relaxed mb-8">We don't just manage numbers; we mitigate risk and identify growth levers within your financial structure.</p>
+                    
+                    <ul class="space-y-6">
+                        <li class="flex items-start gap-4">
+                            <div class="mt-1 bg-accent/10 p-2 rounded text-accent"><i class="fa-solid fa-check"></i></div>
                             <div>
-                                <h4 class="text-xl font-bold mb-2">Tech-First Audit</h4>
-                                <p class="text-secondary leading-relaxed">Utilizing AI and data analytics to provide real-time risk assessments and fraud detection mechanisms.</p>
+                                <h4 class="font-bold text-primary text-lg">Localized Expertise</h4>
+                                <p class="text-sm text-secondary">Deep understanding of regional tax laws and the J&K economic landscape.</p>
                             </div>
-                        </div>
-                        <div class="flex gap-6">
-                            <div class="flex-shrink-0 w-14 h-14 feature-icon-box rounded-lg flex items-center justify-center text-accent text-2xl shadow-xl shadow-primary/10">
-                                <i class="fa-solid fa-earth-americas"></i>
-                            </div>
+                        </li>
+                        <li class="flex items-start gap-4">
+                            <div class="mt-1 bg-accent/10 p-2 rounded text-accent"><i class="fa-solid fa-check"></i></div>
                             <div>
-                                <h4 class="text-xl font-bold mb-2">Cross-Border Mastery</h4>
-                                <p class="text-secondary leading-relaxed">Specialized in navigating multi-jurisdictional tax laws and international financial reporting standards (IFRS).</p>
+                                <h4 class="font-bold text-primary text-lg">Direct Principal Access</h4>
+                                <p class="text-sm text-secondary">Work directly with Mr. Nazir on all critical financial matters—no hand-offs.</p>
                             </div>
-                        </div>
-                        <div class="flex gap-6">
-                            <div class="flex-shrink-0 w-14 h-14 feature-icon-box rounded-lg flex items-center justify-center text-accent text-2xl shadow-xl shadow-primary/10">
-                                <i class="fa-solid fa-chess-knight"></i>
-                            </div>
+                        </li>
+                        <li class="flex items-start gap-4">
+                            <div class="mt-1 bg-accent/10 p-2 rounded text-accent"><i class="fa-solid fa-check"></i></div>
                             <div>
-                                <h4 class="text-xl font-bold mb-2">Proactive Strategy</h4>
-                                <p class="text-secondary leading-relaxed">We don't just report history; we forecast challenges and build defensive financial structures for the future.</p>
+                                <h4 class="font-bold text-primary text-lg">Data-Driven Precision</h4>
+                                <p class="text-sm text-secondary">Leveraging modern fintech tools to ensure 100% accuracy in reporting.</p>
                             </div>
-                        </div>
-                    </div>
+                        </li>
+                    </ul>
                 </div>
-                <div class="relative reveal">
-                    <div class="absolute -top-10 -right-10 w-40 h-40 bg-accent/5 rounded-full blur-3xl"></div>
-                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800&q=80" class="rounded-2xl shadow-2xl relative z-10 w-full object-cover h-[500px]" alt="Team Meeting">
-                    <div class="absolute -bottom-10 -left-10 bg-primary p-10 rounded-xl text-white shadow-2xl z-20 hidden md:block">
-                        <p class="text-5xl font-serif font-bold text-accent mb-2">15Y+</p>
-                        <p class="text-xs uppercase tracking-widest font-bold">Industry Leadership</p>
-                    </div>
+                <div class="relative reveal hidden lg:block">
+                    <div class="absolute -inset-4 border-2 border-accent/20 rounded-2xl"></div>
+                    <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&q=80" alt="Office Professionalism" class="relative rounded-xl shadow-2xl grayscale hover:grayscale-0 transition-all duration-700">
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Core Services -->
-    <section id="services" class="py-24 bg-slate-50">
+    <section id="services" class="py-24 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-20">
             <h2 class="text-accent font-extrabold tracking-widest uppercase text-xs mb-4">Verticals</h2>
-            <h3 class="text-4xl md:text-5xl font-serif font-bold text-primary section-heading">Our Core Offerings</h3>
+            <h3 class="text-3xl md:text-5xl font-serif font-bold text-primary section-heading">Our Core Offerings</h3>
         </div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="service-card p-10 bg-white border border-slate-100 rounded-2xl group reveal">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            <div class="service-card p-8 md:p-10 bg-slate-50 border border-slate-100 rounded-2xl group reveal">
                 <div class="text-accent text-4xl mb-8 group-hover:scale-110 transition-transform">
-                    <i class="fa-solid fa-file-signature"></i>
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
                 </div>
                 <h3 class="text-2xl font-serif font-bold mb-4">Audit & Assurance</h3>
                 <p class="text-secondary leading-relaxed mb-6">Unbiased and rigorous evaluation of financial statements that builds shareholder trust and market credibility.</p>
-                <a href="#" class="text-xs font-bold uppercase tracking-widest text-primary border-b-2 border-accent pb-1 group-hover:text-accent transition-colors">Details</a>
+                <span class="text-xs font-bold uppercase tracking-widest text-primary border-b-2 border-accent pb-1">Industry Standard</span>
             </div>
 
-            <div class="service-card p-10 bg-white border border-slate-100 rounded-2xl group reveal">
+            <div class="service-card p-8 md:p-10 bg-slate-50 border border-slate-100 rounded-2xl group reveal">
                 <div class="text-accent text-4xl mb-8 group-hover:scale-110 transition-transform">
                     <i class="fa-solid fa-hand-holding-dollar"></i>
                 </div>
                 <h3 class="text-2xl font-serif font-bold mb-4">Tax Advisory</h3>
-                <p class="text-secondary leading-relaxed mb-6">Strategic planning for income tax, corporate tax, and GST, ensuring maximum efficiency and zero compliance risk.</p>
-                <a href="#" class="text-xs font-bold uppercase tracking-widest text-primary border-b-2 border-accent pb-1 group-hover:text-accent transition-colors">Details</a>
+                <p class="text-secondary leading-relaxed mb-6">Strategic planning for income tax and GST, ensuring maximum efficiency and zero compliance risk for businesses.</p>
+                <span class="text-xs font-bold uppercase tracking-widest text-primary border-b-2 border-accent pb-1">Tax Management</span>
             </div>
 
-            <div class="service-card p-10 bg-white border border-slate-100 rounded-2xl group reveal">
+            <div class="service-card p-8 md:p-10 bg-slate-50 border border-slate-100 rounded-2xl group reveal">
                 <div class="text-accent text-4xl mb-8 group-hover:scale-110 transition-transform">
                     <i class="fa-solid fa-diagram-project"></i>
                 </div>
                 <h3 class="text-2xl font-serif font-bold mb-4">Corporate Law</h3>
-                <p class="text-secondary leading-relaxed mb-6">Navigating Companies Act requirements, ROC filings, and corporate governance frameworks for sustainable operations.</p>
-                <a href="#" class="text-xs font-bold uppercase tracking-widest text-primary border-b-2 border-accent pb-1 group-hover:text-accent transition-colors">Details</a>
+                <p class="text-secondary leading-relaxed mb-6">Navigating Companies Act requirements, ROC filings, and governance frameworks for sustainable local operations.</p>
+                <span class="text-xs font-bold uppercase tracking-widest text-primary border-b-2 border-accent pb-1">Compliance</span>
             </div>
         </div>
     </section>
 
-    <!-- Industry Focus -->
-    <section id="industries" class="py-24 bg-primary text-white">
+    <!-- Principal Section -->
+    <section id="leadership" class="py-24 bg-slate-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-10">
-                <div class="max-w-2xl reveal">
-                    <h2 class="text-accent font-extrabold tracking-widest uppercase text-xs mb-4">Domain Focus</h2>
-                    <h3 class="text-4xl md:text-5xl font-serif font-bold leading-tight">Tailored Solutions for Specialized Sectors</h3>
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="reveal">
+                    <h2 class="text-accent font-extrabold tracking-widest uppercase text-xs mb-4">Firm Principal</h2>
+                    <h3 class="text-4xl md:text-5xl font-serif font-bold text-primary mb-8 leading-tight">Expertise Cultivated Over Decades</h3>
+                    <p class="text-lg text-secondary leading-relaxed mb-6">
+                        Amir Nazir is a Fellow Member of the Institute of Chartered Accountants of India (ICAI) with a distinguished legacy of practice in Srinagar. 
+                    </p>
+                    <p class="text-secondary leading-relaxed mb-10">
+                        His expertise spans across statutory auditing for major financial institutions, sophisticated tax litigation, and corporate structuring for Jammu & Kashmir's leading businesses. Under his leadership, the firm has become a benchmark for financial integrity in the region.
+                    </p>
+                    <div class="grid grid-cols-2 gap-4 md:gap-6">
+                        <div class="p-6 bg-white rounded-xl shadow-sm border border-slate-100">
+                            <i class="fa-solid fa-graduation-cap text-accent text-2xl mb-4"></i>
+                            <h4 class="font-bold text-primary">FCA (ICAI)</h4>
+                            <p class="text-[10px] text-secondary mt-1 uppercase tracking-wider font-bold">Credential</p>
+                        </div>
+                        <div class="p-6 bg-white rounded-xl shadow-sm border border-slate-100">
+                            <i class="fa-solid fa-scale-balanced text-accent text-2xl mb-4"></i>
+                            <h4 class="font-bold text-primary">Tax Expert</h4>
+                            <p class="text-[10px] text-secondary mt-1 uppercase tracking-wider font-bold">Specialization</p>
+                        </div>
+                    </div>
                 </div>
-                <button onclick="openBookingModal()" class="bg-accent px-8 py-4 rounded-sm font-bold uppercase tracking-widest text-sm hover:bg-white hover:text-primary transition-all reveal">Get Sector Advice</button>
+                <div class="relative reveal group">
+                    <div class="absolute -bottom-10 -right-10 w-64 h-64 bg-accent/5 rounded-full blur-3xl group-hover:bg-accent/10 transition-all"></div>
+                    <img src="https://lh3.googleusercontent.com/p/AF1QipP_OQJoNSiD47Nr5f-3JLVaXIwtbXZAb6BWrfOL=w243-h174-n-k-no-nu" alt="Amir Nazir" class="rounded-2xl shadow-2xl relative z-10 w-full object-cover min-h-[400px] md:min-h-[500px] lg:min-h-[550px] border-4 border-white">
+                    <div class="absolute -bottom-6 -left-6 md:-bottom-8 md:-left-8 bg-primary p-6 md:p-10 rounded-xl text-white shadow-2xl z-20">
+                        <p class="text-2xl md:text-3xl font-serif font-bold text-accent mb-1">Amir Nazir</p>
+                        <p class="text-[10px] md:text-xs uppercase tracking-[0.2em] font-bold text-slate-400">Managing Partner & Principal</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sector Specializations -->
+    <section id="expertise" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16">
+            <h2 class="text-accent font-extrabold tracking-widest uppercase text-xs mb-4">Market Reach</h2>
+            <h3 class="text-3xl md:text-5xl font-serif font-bold text-primary">Sector Specializations</h3>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div class="expert-card p-6 bg-slate-50 rounded-xl text-center border border-transparent hover:border-accent/20">
+                <i class="fa-solid fa-hotel text-accent text-3xl mb-4"></i>
+                <h4 class="font-bold text-primary">Hospitality</h4>
+            </div>
+            <div class="expert-card p-6 bg-slate-50 rounded-xl text-center border border-transparent hover:border-accent/20">
+                <i class="fa-solid fa-building-columns text-accent text-3xl mb-4"></i>
+                <h4 class="font-bold text-primary">Banking</h4>
+            </div>
+            <div class="expert-card p-6 bg-slate-50 rounded-xl text-center border border-transparent hover:border-accent/20">
+                <i class="fa-solid fa-truck-fast text-accent text-3xl mb-4"></i>
+                <h4 class="font-bold text-primary">Logistics</h4>
+            </div>
+            <div class="expert-card p-6 bg-slate-50 rounded-xl text-center border border-transparent hover:border-accent/20">
+                <i class="fa-solid fa-stethoscope text-accent text-3xl mb-4"></i>
+                <h4 class="font-bold text-primary">Healthcare</h4>
+            </div>
+            <div class="expert-card p-6 bg-slate-50 rounded-xl text-center border border-transparent hover:border-accent/20">
+                <i class="fa-solid fa-leaf text-accent text-3xl mb-4"></i>
+                <h4 class="font-bold text-primary">Agriculture</h4>
+            </div>
+            <div class="expert-card p-6 bg-slate-50 rounded-xl text-center border border-transparent hover:border-accent/20">
+                <i class="fa-solid fa-hammer text-accent text-3xl mb-4"></i>
+                <h4 class="font-bold text-primary">Construction</h4>
+            </div>
+            <div class="expert-card p-6 bg-slate-50 rounded-xl text-center border border-transparent hover:border-accent/20">
+                <i class="fa-solid fa-microchip text-accent text-3xl mb-4"></i>
+                <h4 class="font-bold text-primary">Tech Startups</h4>
+            </div>
+            <div class="expert-card p-6 bg-slate-50 rounded-xl text-center border border-transparent hover:border-accent/20">
+                <i class="fa-solid fa-graduation-cap text-accent text-3xl mb-4"></i>
+                <h4 class="font-bold text-primary">Education</h4>
+            </div>
+        </div>
+    </section>
+
+    <!-- Client Feedback -->
+    <section class="py-24 bg-primary text-white overflow-hidden relative">
+        <div class="absolute top-0 right-0 opacity-10 pointer-events-none">
+            <i class="fa-solid fa-quote-right text-[300px] -mr-20 -mt-20"></i>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-accent font-extrabold tracking-widest uppercase text-xs mb-4">Client Feedback</h2>
+                <h3 class="text-3xl md:text-5xl font-serif font-bold">Trusted by J&K's Elite</h3>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 reveal">
-                <div class="p-8 bg-white/5 border border-white/10 rounded-xl hover:bg-accent/20 transition-all cursor-default">
-                    <i class="fa-solid fa-building-columns text-accent text-3xl mb-6"></i>
-                    <h4 class="font-bold text-lg">FinTech</h4>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+                <div class="bg-white/5 p-8 border border-white/10 backdrop-blur-sm rounded-lg reveal">
+                    <div class="flex text-accent gap-1 mb-6">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-slate-300 italic mb-8 leading-relaxed">"Amir Nazir's approach to GST compliance transformed our retail chain's financial operations. Highly professional and thorough."</p>
+                    <div class="border-t border-white/10 pt-6">
+                        <p class="font-bold">M. Abdullah</p>
+                        <p class="text-xs text-slate-400 uppercase tracking-widest mt-1">MD, Heritage Textiles</p>
+                    </div>
                 </div>
-                <div class="p-8 bg-white/5 border border-white/10 rounded-xl hover:bg-accent/20 transition-all cursor-default">
-                    <i class="fa-solid fa-hospital text-accent text-3xl mb-6"></i>
-                    <h4 class="font-bold text-lg">Healthcare</h4>
+                <div class="bg-white/5 p-8 border border-white/10 backdrop-blur-sm rounded-lg reveal">
+                    <div class="flex text-accent gap-1 mb-6">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-slate-300 italic mb-8 leading-relaxed">"Their audit services are impeccably detailed. They helped us identify critical tax-saving opportunities we had previously missed."</p>
+                    <div class="border-t border-white/10 pt-6">
+                        <p class="font-bold">S. Farooq</p>
+                        <p class="text-xs text-slate-400 uppercase tracking-widest mt-1">Director, Valley Healthcare</p>
+                    </div>
                 </div>
-                <div class="p-8 bg-white/5 border border-white/10 rounded-xl hover:bg-accent/20 transition-all cursor-default">
-                    <i class="fa-solid fa-plug-circle-bolt text-accent text-3xl mb-6"></i>
-                    <h4 class="font-bold text-lg">Energy</h4>
+                <div class="bg-white/5 p-8 border border-white/10 backdrop-blur-sm rounded-lg reveal md:hidden lg:block">
+                    <div class="flex text-accent gap-1 mb-6">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-slate-300 italic mb-8 leading-relaxed">"Practical solutions for complex corporate legal hurdles. The ANA firm is undoubtedly the gold standard in Srinagar."</p>
+                    <div class="border-t border-white/10 pt-6">
+                        <p class="font-bold">I. Ahmed</p>
+                        <p class="text-xs text-slate-400 uppercase tracking-widest mt-1">CEO, Pinnacle Const.</p>
+                    </div>
                 </div>
-                <div class="p-8 bg-white/5 border border-white/10 rounded-xl hover:bg-accent/20 transition-all cursor-default">
-                    <i class="fa-solid fa-truck-fast text-accent text-3xl mb-6"></i>
-                    <h4 class="font-bold text-lg">Logistics</h4>
+            </div>
+        </div>
+    </section>
+
+    <!-- Knowledge Hub -->
+    <section class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-end gap-8 mb-16">
+            <div class="reveal">
+                <h2 class="text-accent font-extrabold tracking-widest uppercase text-xs mb-4">Knowledge Hub</h2>
+                <h3 class="text-3xl md:text-5xl font-serif font-bold text-primary">Compliance Insights</h3>
+            </div>
+            <a href="#" class="text-xs font-bold uppercase tracking-widest text-primary border-b-2 border-accent pb-1 hover:text-accent transition-colors mb-2">View All Articles</a>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div class="reveal group cursor-pointer">
+                <div class="overflow-hidden rounded-xl mb-6">
+                    <img src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80" class="group-hover:scale-110 transition-transform duration-700 aspect-video object-cover">
+                </div>
+                <p class="text-accent text-[10px] font-bold uppercase tracking-widest mb-3">Tax Update | March 2024</p>
+                <h4 class="text-xl font-serif font-bold text-primary mb-4 leading-snug group-hover:text-accent transition-colors">Key Changes in J&K GST Regulations for SME Sector</h4>
+                <p class="text-secondary text-sm line-clamp-2">Understanding the new thresholds and reporting requirements mandatory for local businesses this quarter...</p>
+            </div>
+            <div class="reveal group cursor-pointer">
+                <div class="overflow-hidden rounded-xl mb-6">
+                    <img src="https://images.unsplash.com/photo-1454165833767-027ffea70250?auto=format&fit=crop&w=800&q=80" class="group-hover:scale-110 transition-transform duration-700 aspect-video object-cover">
+                </div>
+                <p class="text-accent text-[10px] font-bold uppercase tracking-widest mb-3">Audit Guide | 2024</p>
+                <h4 class="text-xl font-serif font-bold text-primary mb-4 leading-snug group-hover:text-accent transition-colors">Top 5 Common Mistakes in Annual Financial Audits</h4>
+                <p class="text-secondary text-sm line-clamp-2">How to prepare your documentation and streamline the verification process for a seamless audit experience...</p>
+            </div>
+            <div class="reveal group cursor-pointer md:hidden lg:block">
+                <div class="overflow-hidden rounded-xl mb-6">
+                    <img src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=800&q=80" class="group-hover:scale-110 transition-transform duration-700 aspect-video object-cover">
+                </div>
+                <p class="text-accent text-[10px] font-bold uppercase tracking-widest mb-3">Corporate Law | FEB 2024</p>
+                <h4 class="text-xl font-serif font-bold text-primary mb-4 leading-snug group-hover:text-accent transition-colors">Navigating New MCA-21 Portal V3 Compliance</h4>
+                <p class="text-secondary text-sm line-clamp-2">A guide on how the transition to V3 affects your company filings and board resolutions in 2024...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-24 bg-slate-50">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-accent font-extrabold tracking-widest uppercase text-xs mb-4 italic">Clarity</h2>
+                <h3 class="text-3xl md:text-5xl font-serif font-bold text-primary mb-8">Frequently Asked</h3>
+            </div>
+            
+            <div class="space-y-4">
+                <details class="bg-white border border-slate-200 rounded-lg group reveal">
+                    <summary class="p-6 cursor-pointer flex justify-between items-center list-none font-bold text-primary">
+                        <span>What documents are needed for a new GST registration?</span>
+                        <i class="fa-solid fa-chevron-down text-accent transition-transform duration-300"></i>
+                    </summary>
+                    <div class="p-6 pt-0 text-secondary text-sm border-t border-slate-100">
+                        Typical requirements include PAN card, Aadhaar, Proof of Business Address (Electricity bill/Rent deed), and Bank details. We handle the entire digital filing process for you.
+                    </div>
+                </details>
+                <details class="bg-white border border-slate-200 rounded-lg group reveal">
+                    <summary class="p-6 cursor-pointer flex justify-between items-center list-none font-bold text-primary">
+                        <span>How often should my business undergo an internal audit?</span>
+                        <i class="fa-solid fa-chevron-down text-accent transition-transform duration-300"></i>
+                    </summary>
+                    <div class="p-6 pt-0 text-secondary text-sm border-t border-slate-100">
+                        While statutory audits are annual, we recommend quarterly internal reviews for scaling businesses to maintain financial health and catch discrepancies early.
+                    </div>
+                </details>
+                <details class="bg-white border border-slate-200 rounded-lg group reveal">
+                    <summary class="p-6 cursor-pointer flex justify-between items-center list-none font-bold text-primary">
+                        <span>Do you provide representation for income tax appeals?</span>
+                        <i class="fa-solid fa-chevron-down text-accent transition-transform duration-300"></i>
+                    </summary>
+                    <div class="p-6 pt-0 text-secondary text-sm border-t border-slate-100">
+                        Yes, Mr. Nazir personally handles high-stakes tax litigation and appeals representation before the ITAT and other authorities.
+                    </div>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-accent font-extrabold tracking-widest uppercase text-xs mb-4">Get In Touch</h2>
+                <h3 class="text-3xl md:text-4xl font-serif font-bold text-primary">Office Location & Support</h3>
+            </div>
+            
+            <div class="grid lg:grid-cols-3 gap-8">
+                <div class="p-8 bg-slate-50 rounded-2xl shadow-sm reveal border border-slate-100">
+                    <div class="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center text-accent text-xl mb-6">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-4">Srinagar Office</h4>
+                    <p class="text-secondary text-sm leading-relaxed">
+                        3RD, MUNWAR PLAZA, <br>
+                        above J&K BANK, Munawara Abad, <br>
+                        Srinagar, Jammu and Kashmir 190001
+                    </p>
+                </div>
+                
+                <div class="p-8 bg-slate-50 rounded-2xl shadow-sm reveal border border-slate-100">
+                    <div class="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center text-accent text-xl mb-6">
+                        <i class="fa-solid fa-phone"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-4">Direct Connect</h4>
+                    <a href="tel:09682666162" class="text-primary font-bold text-lg hover:text-accent transition-colors">096826 66162</a>
+                    <p class="text-secondary text-xs mt-2 uppercase tracking-widest font-bold">Mon - Sat, 10 AM - 6 PM</p>
+                </div>
+
+                <div class="p-8 bg-slate-50 rounded-2xl shadow-sm reveal border border-slate-100">
+                    <div class="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center text-accent text-xl mb-6">
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-4">Email Inquiry</h4>
+                    <p class="text-primary font-bold">amirnazir.ca@gmail.com</p>
+                    <p class="text-secondary text-sm mt-2">For audit queries and appointments.</p>
                 </div>
             </div>
         </div>
@@ -286,118 +509,114 @@
     <!-- Booking Modal -->
     <div id="booking-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
         <div class="absolute inset-0 bg-primary/95 backdrop-blur-xl" onclick="closeBookingModal()"></div>
-        
-        <!-- Form Container -->
-        <div id="booking-content" class="relative bg-white w-full max-w-2xl rounded-sm shadow-2xl overflow-hidden transform scale-95 opacity-0 transition-all duration-300 max-h-[90vh] flex flex-col">
-            <div class="p-8 bg-slate-50 border-b flex justify-between items-center sticky top-0 z-10">
+        <div id="booking-content" class="relative bg-white w-full max-w-2xl rounded-sm shadow-2xl overflow-hidden transform scale-95 opacity-0 transition-all duration-300 max-h-[95vh] flex flex-col">
+            
+            <!-- Default Form Header -->
+            <div id="modal-header" class="p-6 md:p-8 bg-slate-50 border-b flex justify-between items-center sticky top-0 z-10">
                 <div>
-                    <h2 class="text-3xl font-serif font-bold text-primary">Schedule Consultation</h2>
-                    <p class="text-xs text-secondary font-bold uppercase tracking-widest mt-1">Connect with our Lead Partners</p>
+                    <h2 class="text-2xl md:text-3xl font-serif font-bold text-primary">Schedule Consultation</h2>
+                    <p class="text-[10px] md:text-xs text-secondary font-bold uppercase tracking-widest mt-1">Munawara Abad Office Appointment</p>
                 </div>
                 <button onclick="closeBookingModal()" class="text-primary hover:text-accent transition-colors"><i class="fa-solid fa-xmark text-2xl"></i></button>
             </div>
-            
-            <div class="p-8 modal-scroll overflow-y-auto">
-                <form id="consultation-form" class="space-y-8">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Your Identity</label>
-                            <input required type="text" class="w-full border-b-2 border-slate-200 py-3 focus:outline-none focus:border-accent transition-colors text-lg" placeholder="Full Name">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Communication</label>
-                            <input required type="email" class="w-full border-b-2 border-slate-200 py-3 focus:outline-none focus:border-accent transition-colors text-lg" placeholder="Business Email">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Engagement Type</label>
-                            <select class="w-full border-b-2 border-slate-200 py-3 focus:outline-none focus:border-accent transition-colors bg-transparent text-lg">
-                                <option>Tax Compliance</option>
-                                <option>Financial Audit</option>
-                                <option>Corporate Advisory</option>
-                                <option>Other</option>
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Timeline</label>
-                            <input required type="date" class="w-full border-b-2 border-slate-200 py-3 focus:outline-none focus:border-accent transition-colors text-lg">
-                        </div>
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Executive Summary</label>
-                        <textarea rows="3" class="w-full border-b-2 border-slate-200 py-3 focus:outline-none focus:border-accent transition-colors resize-none text-lg" placeholder="Describe your requirement..."></textarea>
-                    </div>
-                    <button type="submit" class="w-full bg-primary text-white py-5 font-bold uppercase tracking-widest hover:bg-accent transition-all shadow-xl shadow-primary/10">
-                        Initiate Request
-                    </button>
-                </form>
-            </div>
-        </div>
 
-        <!-- Success Message -->
-        <div id="success-content" class="relative bg-white w-full max-w-lg rounded-sm shadow-2xl p-12 text-center transform scale-95 opacity-0 transition-all duration-300 hidden">
-            <div class="w-24 h-24 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-8">
-                <i class="fa-solid fa-check text-4xl"></i>
+            <!-- Modal Body (Form Container) -->
+            <div id="modal-body" class="p-6 md:p-8 overflow-y-auto">
+                <!-- Main Form -->
+                <form id="consultation-form" class="space-y-6 md:space-y-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Name</label>
+                            <input required type="text" class="w-full border-b-2 border-slate-200 py-2 focus:outline-none focus:border-accent transition-colors text-base md:text-lg" placeholder="Full Name">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Email</label>
+                            <input required type="email" class="w-full border-b-2 border-slate-200 py-2 focus:outline-none focus:border-accent transition-colors text-base md:text-lg" placeholder="Email Address">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Preferred Date</label>
+                            <input required type="date" class="w-full border-b-2 border-slate-200 py-2 focus:outline-none focus:border-accent transition-colors text-base md:text-lg bg-transparent">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Preferred Time</label>
+                            <input required type="time" class="w-full border-b-2 border-slate-200 py-2 focus:outline-none focus:border-accent transition-colors text-base md:text-lg bg-transparent">
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Consultation Category</label>
+                        <select class="w-full border-b-2 border-slate-200 py-2 focus:outline-none focus:border-accent transition-colors text-base md:text-lg bg-transparent">
+                            <option>Audit & Assurance</option>
+                            <option>Taxation (GST/Income Tax)</option>
+                            <option>Corporate Advisory</option>
+                            <option>Start-up Compliance</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full bg-primary text-white py-4 md:py-5 font-bold uppercase tracking-widest hover:bg-accent transition-all shadow-xl shadow-primary/10">Confirm Booking</button>
+                </form>
+
+                <!-- Dedicated Thank You Content (Hidden Initially) -->
+                <div id="thank-you-view" class="hidden text-center py-12 px-4 space-y-8 animate-[fadeInUp_0.6s_forwards]">
+                    <div class="w-24 h-24 bg-accent/10 text-accent rounded-full flex items-center justify-center mx-auto text-4xl">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-3xl md:text-4xl font-serif font-bold text-primary mb-4">Request Received</h3>
+                        <p class="text-secondary leading-relaxed max-w-sm mx-auto">Thank you for choosing ANA. Our team will review your preferred date and time and contact you shortly to confirm the appointment.</p>
+                    </div>
+                    <div class="pt-4">
+                        <button onclick="closeBookingModal()" class="inline-block bg-primary text-white px-10 py-4 font-bold uppercase tracking-widest hover:bg-accent transition-all rounded-sm shadow-xl shadow-primary/10">Return to Home Page</button>
+                    </div>
+                </div>
             </div>
-            <h2 class="text-3xl font-serif font-bold text-primary mb-4">Request Sent</h2>
-            <p class="text-secondary mb-10 leading-relaxed">A dedicated account manager will review your request and contact you within 4 business hours.</p>
-            <button onclick="closeBookingModal()" class="bg-primary text-white px-10 py-4 rounded-sm font-bold uppercase tracking-widest hover:bg-accent transition-all">Understood</button>
         </div>
     </div>
 
-    <!-- Contact & Footer -->
-    <footer class="bg-slate-900 text-white pt-24 pb-12">
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-white pt-20 pb-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-4 gap-16 mb-20">
-                <div class="col-span-1 md:col-span-2">
-                    <div class="flex flex-col mb-10">
-                        <span class="text-3xl font-serif font-extrabold tracking-tight text-white">AMIR NAZIR</span>
+            <div class="grid lg:grid-cols-4 md:grid-cols-2 gap-12 mb-16">
+                <div class="col-span-1 lg:col-span-2">
+                    <div class="flex flex-col mb-8">
+                        <span class="text-3xl font-serif font-extrabold tracking-tight text-white uppercase">AMIR NAZIR</span>
                         <span class="text-xs tracking-[0.4em] text-accent font-bold uppercase">& Associates</span>
                     </div>
-                    <p class="text-slate-400 max-w-md leading-relaxed mb-10">
-                        A boutique Chartered Accountancy firm focused on delivering high-precision financial solutions to global businesses. Established on principles of integrity and technical excellence.
-                    </p>
-                    <div class="flex space-x-6 text-2xl text-slate-500">
-                        <a href="#" class="hover:text-accent transition-colors"><i class="fa-brands fa-linkedin-in"></i></a>
-                        <a href="#" class="hover:text-accent transition-colors"><i class="fa-brands fa-x-twitter"></i></a>
-                        <a href="#" class="hover:text-accent transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                    <p class="text-slate-400 max-w-sm leading-relaxed mb-8 italic">"Building Srinagar's future, one ledger at a time."</p>
+                    <div class="flex space-x-6">
+                        <a href="#" class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center hover:bg-accent transition-colors"><i class="fa-brands fa-linkedin-in"></i></a>
+                        <a href="#" class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center hover:bg-accent transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="tel:09682666162" class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center hover:bg-accent transition-colors"><i class="fa-solid fa-phone"></i></a>
                     </div>
                 </div>
-                
                 <div>
-                    <h5 class="text-xs font-bold uppercase tracking-[0.3em] text-accent mb-8">Quick Links</h5>
-                    <ul class="space-y-4 text-slate-400">
-                        <li><a href="#about" class="hover:text-white transition-colors">Our Ethos</a></li>
-                        <li><a href="#services" class="hover:text-white transition-colors">Tax Solutions</a></li>
-                        <li><a href="#industries" class="hover:text-white transition-colors">Industry Expertise</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Insights & News</a></li>
+                    <h5 class="text-[10px] font-extrabold uppercase tracking-[0.3em] text-accent mb-8">Navigation</h5>
+                    <ul class="space-y-4 text-sm text-slate-400">
+                        <li><a href="#services" class="hover:text-white">Services</a></li>
+                        <li><a href="#leadership" class="hover:text-white">Principal</a></li>
+                        <li><a href="#expertise" class="hover:text-white">Expertise</a></li>
+                        <li><a href="#faq" class="hover:text-white">FAQ</a></li>
                     </ul>
                 </div>
-
                 <div>
-                    <h5 class="text-xs font-bold uppercase tracking-[0.3em] text-accent mb-8">Global HQ</h5>
-                    <p class="text-slate-400 leading-loose">
-                        L-04, Ground Floor, <br>
-                        Financial District, <br>
-                        Dubai, UAE <br>
-                        <span class="text-white font-bold mt-4 block">+971 4 XXX XXXX</span>
+                    <h5 class="text-[10px] font-extrabold uppercase tracking-[0.3em] text-accent mb-8">Head Office</h5>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        3RD, MUNWAR PLAZA, <br>
+                        above J&K BANK, Munawara Abad, <br>
+                        Srinagar, J&K 190001
                     </p>
                 </div>
             </div>
-            
-            <div class="pt-12 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
-                <p class="text-slate-500 text-sm">&copy; 2024 Amir Nazir & Associates. Certified Public Accountants.</p>
-                <div class="flex space-x-8 text-xs font-bold uppercase tracking-widest text-slate-500">
-                    <a href="#" class="hover:text-white">Privacy</a>
-                    <a href="#" class="hover:text-white">Compliance</a>
-                    <a href="#" class="hover:text-white">Legal</a>
-                </div>
+            <div class="pt-8 border-t border-slate-800 text-center">
+                <p class="text-slate-500 text-[10px] uppercase tracking-widest">&copy; 2024 Amir Nazir & Associates. Chartered Accountants.</p>
             </div>
         </div>
     </footer>
 
     <!-- Scripts -->
     <script>
-        // --- Mobile Menu Toggle ---
         const menuBtn = document.getElementById('mobile-menu-btn');
         const menuPanel = document.getElementById('mobile-menu-container');
         const overlay = document.getElementById('mobile-overlay');
@@ -423,33 +642,31 @@
 
         menuBtn.addEventListener('click', toggleMenu);
         overlay.addEventListener('click', toggleMenu);
-        document.querySelectorAll('.mobile-link').forEach(link => {
-            link.addEventListener('click', toggleMenu);
-        });
+        document.querySelectorAll('.mobile-link').forEach(link => link.addEventListener('click', toggleMenu));
 
-        // --- Modal Control ---
         const bookingModal = document.getElementById('booking-modal');
         const bookingContent = document.getElementById('booking-content');
-        const successContent = document.getElementById('success-content');
         const consultForm = document.getElementById('consultation-form');
+        const modalHeader = document.getElementById('modal-header');
+        const thankYouView = document.getElementById('thank-you-view');
 
         function openBookingModal() {
+            // Reset to form view if it was previously submitted
+            consultForm.classList.remove('hidden');
+            modalHeader.classList.remove('hidden');
+            thankYouView.classList.add('hidden');
+            
             bookingModal.classList.remove('hidden');
             bookingModal.classList.add('flex');
-            setTimeout(() => {
-                bookingContent.classList.remove('scale-95', 'opacity-0');
-            }, 10);
+            setTimeout(() => bookingContent.classList.remove('scale-95', 'opacity-0'), 10);
             document.body.classList.add('overflow-hidden');
         }
 
         function closeBookingModal() {
             bookingContent.classList.add('scale-95', 'opacity-0');
-            successContent.classList.add('scale-95', 'opacity-0');
             setTimeout(() => {
                 bookingModal.classList.add('hidden');
                 bookingModal.classList.remove('flex');
-                successContent.classList.add('hidden');
-                bookingContent.classList.remove('hidden');
                 document.body.classList.remove('overflow-hidden');
             }, 300);
         }
@@ -458,43 +675,25 @@
             e.preventDefault();
             const btn = consultForm.querySelector('button');
             btn.disabled = true;
-            btn.innerText = 'Verifying...';
-
+            btn.innerText = 'Requesting...';
+            
             setTimeout(() => {
-                bookingContent.classList.add('hidden');
-                successContent.classList.remove('hidden');
-                setTimeout(() => {
-                    successContent.classList.remove('scale-95', 'opacity-0');
-                }, 10);
-                consultForm.reset();
+                // Hide header and form, show thank you page
+                modalHeader.classList.add('hidden');
+                consultForm.classList.add('hidden');
+                thankYouView.classList.remove('hidden');
+                
                 btn.disabled = false;
-                btn.innerText = 'Initiate Request';
-            }, 1500);
+                btn.innerText = 'Confirm Booking';
+            }, 1000);
         });
 
-        // --- Intersection Observer for Animations ---
-        const revealElements = document.querySelectorAll('.reveal');
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                }
+                if (entry.isIntersecting) entry.target.classList.add('active');
             });
-        }, { threshold: 0.15 });
-
-        revealElements.forEach(el => revealObserver.observe(el));
-
-        // --- Scroll Adjustments ---
-        window.addEventListener('scroll', () => {
-            const nav = document.querySelector('nav');
-            if (window.scrollY > 80) {
-                nav.classList.add('py-2', 'shadow-2xl');
-                nav.classList.remove('py-4');
-            } else {
-                nav.classList.remove('py-2', 'shadow-2xl');
-                nav.classList.add('py-4');
-            }
-        });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
     </script>
 </body>
 </html>
