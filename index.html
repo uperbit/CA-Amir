@@ -626,18 +626,17 @@
         function toggleMenu() {
             isMenuOpen = !isMenuOpen;
             if (isMenuOpen) {
-                document.body.classList.add('overflow-hidden');
                 menuPanel.classList.remove('translate-x-full');
                 overlay.classList.remove('hidden');
                 setTimeout(() => overlay.classList.add('opacity-100'), 10);
                 menuIcon.classList.replace('fa-bars-staggered', 'fa-xmark');
             } else {
-                document.body.classList.remove('overflow-hidden');
                 menuPanel.classList.add('translate-x-full');
                 overlay.classList.remove('opacity-100');
                 setTimeout(() => overlay.classList.add('hidden'), 300);
                 menuIcon.classList.replace('fa-xmark', 'fa-bars-staggered');
             }
+            syncScrollLock();
         }
 
         menuBtn.addEventListener('click', toggleMenu);
@@ -650,6 +649,12 @@
         const modalHeader = document.getElementById('modal-header');
         const thankYouView = document.getElementById('thank-you-view');
 
+        function syncScrollLock() {
+            const shouldLockScroll = isMenuOpen || bookingModal.classList.contains('flex');
+            document.body.classList.toggle('overflow-hidden', shouldLockScroll);
+            document.documentElement.classList.toggle('overflow-hidden', shouldLockScroll);
+        }
+
         function openBookingModal() {
             // Reset to form view if it was previously submitted
             consultForm.classList.remove('hidden');
@@ -659,7 +664,7 @@
             bookingModal.classList.remove('hidden');
             bookingModal.classList.add('flex');
             setTimeout(() => bookingContent.classList.remove('scale-95', 'opacity-0'), 10);
-            document.body.classList.add('overflow-hidden');
+            syncScrollLock();
         }
 
         function closeBookingModal() {
@@ -667,7 +672,7 @@
             setTimeout(() => {
                 bookingModal.classList.add('hidden');
                 bookingModal.classList.remove('flex');
-                document.body.classList.remove('overflow-hidden');
+                syncScrollLock();
             }, 300);
         }
 
